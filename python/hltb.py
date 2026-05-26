@@ -7,4 +7,5 @@ def fetchGame(gameName):
         print("Main Story:   %.2f hours" %(results[0].main_story))
         print("Side Content: %.2f hours" %(results[0].main_extra))
 
-fetchGame("Nuclear Throne")
+if __name__ == "__main__":
+    fetchGame("Nuclear Throne")
