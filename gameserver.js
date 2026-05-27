@@ -28,31 +28,37 @@ let hltbService = new HowLongToBeatService();
 
 /**
  * @swagger
- * /test/hltb/{gameName}:
+ * /test/hltb:
  *   get:
  *     tags: [Testing]
  *     summary: Check if can get howlongtobeat game info.
  *     description: yeah.
  *     parameters:
  *       - name: gameName
- *         in: path
+ *         in: query
  *         required: true
  *         schema:
  *           type: string
+ *       - name: limit
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 1
  *     responses:
  *       200:
  *         description: cool
  *       404:
  *         description: not cool
  */
-app.get('/test/hltb/:gameName', async function (req, res) {
+app.get('/test/hltb', async function (req, res) {
     try {
         let options = {
             mode: 'json',
             pythonPath: 'python/venv/bin/python',
             pythonOptions: ['-u'],
             scriptPath: 'python/',
-            args: [req.params.gameName]
+            args: [req.query.gameName, req.query.limit]
         };
         const output = await PythonShell.run('hltb.py', options);
         return res.status(200).json(output);
