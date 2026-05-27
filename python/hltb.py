@@ -1,3 +1,4 @@
+import sys
 from howlongtobeatpy import HowLongToBeat
 
 def fetchGame(gameName):
@@ -9,3 +10,6 @@ def fetchGame(gameName):
 
 if __name__ == "__main__":
     fetchGame("Nuclear Throne")
+else:
+    gameName = sys.argv[1]
+    fetchGame(gameName)

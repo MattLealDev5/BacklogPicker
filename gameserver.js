@@ -2,7 +2,7 @@
 import express from 'express';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
-import PythonShell from 'python-shell';
+import { PythonShell } from 'python-shell';
 
 const app = express()
 const swaggerOptions = {
@@ -28,21 +28,36 @@ let hltbService = new HowLongToBeatService();
 
 /**
  * @swagger
- * /test/hltb:
+ * /test/hltb/{gameName}:
  *   get:
  *     tags: [Testing]
  *     summary: Check if can get howlongtobeat game info.
  *     description: yeah.
+ *     parameters:
+ *       - name: gameName
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: cool
  *       404:
  *         description: not cool
  */
-app.get('/test/hltb', async function (req, res) {
+app.get('/test/hltb/:gameName', async function (req, res) {
+    
+
     try {
-        const game = await hltbService.search('Nioh');
-        return res.status(200).json(game);
+        let options = {
+            mode: 'text',
+            pythonPath: 'python/venv/bin/python',
+            pythonOptions: ['-u'],
+            scriptPath: 'python/',
+            args: [req.params.gameName]
+        };
+        const messages = await PythonShell.run('hltb.py', options);
+        return res.status(200).json(messages);
     } catch(error) {
         return res.status(404).json(error);
     }
