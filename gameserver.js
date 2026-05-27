@@ -54,8 +54,8 @@ app.get('/test/hltb/:gameName', async function (req, res) {
             scriptPath: 'python/',
             args: [req.params.gameName]
         };
-        const messages = await PythonShell.run('hltb.py', options);
-        return res.status(200).json(messages);
+        const output = await PythonShell.run('hltb.py', options);
+        return res.status(200).json(output);
     } catch(error) {
         return res.status(404).json(error);
     }
