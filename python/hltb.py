@@ -1,15 +1,17 @@
 import sys
+import json
 from howlongtobeatpy import HowLongToBeat
 
 def fetchGame(gameName):
     results = HowLongToBeat().search(gameName)
     if len(results) > 0:
-        print(results[0].game_name)
-        print("Main Story:   %.2f hours" %(results[0].main_story))
-        print("Side Content: %.2f hours" %(results[0].main_extra))
+        best = results[0]
+        print(json.dumps({
+            "game_name": best.game_name,
+            "main_story": best.main_story,
+            "main_extra": best.main_extra,
+            "completionist": best.completionist
+        }))
 
-if __name__ == "__main__":
-    fetchGame("Nuclear Throne")
-else:
-    gameName = sys.argv[1]
-    fetchGame(gameName)
+gameName = sys.argv[1]
+fetchGame(gameName)

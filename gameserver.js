@@ -46,11 +46,9 @@ let hltbService = new HowLongToBeatService();
  *         description: not cool
  */
 app.get('/test/hltb/:gameName', async function (req, res) {
-    
-
     try {
         let options = {
-            mode: 'text',
+            mode: 'json',
             pythonPath: 'python/venv/bin/python',
             pythonOptions: ['-u'],
             scriptPath: 'python/',
