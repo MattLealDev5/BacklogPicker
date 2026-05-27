@@ -30,6 +30,8 @@ def fetchGame(gameName):
             "complexity_lvl_co": best.mp_time,
             "complexity_lvl_mp": best.mp_time
         }))
+    else:
+        print(json.dumps({"message": "No games found :("}))
 
 gameName = sys.argv[1]
 fetchGame(gameName)
