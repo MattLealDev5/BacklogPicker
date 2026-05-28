@@ -1,14 +1,13 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
 
 function App() {
   const [games, setGames] = useState([])
+  const [gameName, setGameName] = useState('')
 
   async function search() {
-      const res = await fetch(`http://localhost:5678/hltb?gameName=Psychonauts&limit=1`)
+      const res = await fetch(`http://localhost:5678/hltb?gameName=${gameName}&limit=1`)
       const data = await res.json()
       setGames(data)
       console.log(data)
@@ -17,16 +16,25 @@ function App() {
 
   return (
     <>
-      <div>
+      <section id="title">
         <h1>Hello, welcome to BacklogPicker</h1>
         <h3>Enter your Steam ID and this program will help you choose a game to play from your backlog</h3>
         <p>You wouldn't <i>not</i> play the game we tell you to play on the website you chose to be on, would you?</p>
-        
+      </section>
+
+      <section id="input">
+        <input
+          type="text"
+          placeholder="Enter game name"
+          value={gameName}
+          onChange={(e) => setGameName(e.target.value)}
+        />
+
         <button
           type="button"
-          className="counter"
+          className="fetch"
           onClick={async () => {console.log("printed"); await search(); console.log("printed")}}>
-          Press for Gamez
+          Press for Game
         </button>
         {games.map((game, i) => (
           <div key={i}>
@@ -36,7 +44,8 @@ function App() {
             <p>Completionist: {game.completionist}h</p>
           </div>
         ))}
-      </div>
+      </section>
+      
     </>
   )
 }
