@@ -1,20 +1,25 @@
 
 import express from 'express';
+import cors from 'cors';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import { PythonShell } from 'python-shell';
 
 const app = express()
+
+if (process.env.NODE_ENV !== 'production') {
+    app.use(cors());
+}
 const swaggerOptions = {
   swaggerDefinition: {
     info: {
-      title: 'Game Recommender',
+      title: 'Backlog Picker',
       version: '1.0.0'
     },
     tags: [
       { name: 'Testing', description: 'For testing not to actually use' },
       { name: 'Steam', description: 'Steam Related Endpoints' },
-      { name: 'howlongtobeat', description: 'howlongtobeat Related Endpoints' }
+      { name: 'HLTB', description: 'howlongtobeat Related Endpoints' }
     ],
   },
   apis: ['gameserver.js']
@@ -28,9 +33,9 @@ let hltbService = new HowLongToBeatService();
 
 /**
  * @swagger
- * /test/hltb:
+ * /hltb:
  *   get:
- *     tags: [Testing]
+ *     tags: [HLTB]
  *     summary: Check if can get howlongtobeat game info.
  *     description: yeah.
  *     parameters:
@@ -51,7 +56,7 @@ let hltbService = new HowLongToBeatService();
  *       404:
  *         description: not cool
  */
-app.get('/test/hltb', async function (req, res) {
+app.get('/hltb', async function (req, res) {
     try {
         let options = {
             mode: 'json',
@@ -69,6 +74,7 @@ app.get('/test/hltb', async function (req, res) {
 
 // Setup server
 app.listen(5678); //start the server
+// app.use(cors({ origin: 'https://your-frontend.onrender.com' }));
 console.log('Server is running...');
 console.log('Webapp:   http://localhost:5678/')
 console.log('API Docs: http://localhost:5678/api-docs')
