@@ -73,7 +73,7 @@ app.get('/hltb', async function (req, res) {
 });
 
 // Setup server
-app.listen(5678); //start the server
+app.listen(process.env.PORT || 5678); //start the server
 // app.use(cors({ origin: 'https://your-frontend.onrender.com' }));
 console.log('Server is running...');
 console.log('Webapp:   http://localhost:5678/')
