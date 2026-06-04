@@ -7,8 +7,12 @@ function App() {
   const [gameName, setGameName] = useState('')
   const [isLoading, setLoading] = useState(false)
 
+  const apiURL = process.env.NODE_ENV === 'production'
+    ? process.env.API_URL
+    : 'http://localhost:5678';
+
   async function search() {
-      const res = await fetch(`https://backlogpicker.onrender.com/hltb?gameName=${gameName}&limit=1`)
+      const res = await fetch(`${apiURL}/hltb?gameName=${gameName}&limit=1`)
       const data = await res.json()
       setGames(data)
       console.log(data)
