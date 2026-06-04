@@ -60,7 +60,7 @@ app.get('/hltb', async function (req, res) {
     try {
         let options = {
             mode: 'json',
-            pythonPath: 'python/venv/bin/python',
+            pythonPath: process.env.NODE_ENV === 'production' ? 'python3' : 'python/venv/bin/python',
             pythonOptions: ['-u'],
             scriptPath: 'python/',
             args: [req.query.gameName, req.query.limit]
