@@ -7,9 +7,11 @@ import { PythonShell } from 'python-shell';
 
 const app = express()
 
-if (process.env.NODE_ENV !== 'production') {
-    app.use(cors());
-}
+const allowedOrigins = process.env.NODE_ENV === 'production'
+    ? [process.env.FRONTEND_URL]
+    : ['http://localhost:5173'];
+
+app.use(cors({ origin: allowedOrigins }));
 const swaggerOptions = {
   swaggerDefinition: {
     info: {

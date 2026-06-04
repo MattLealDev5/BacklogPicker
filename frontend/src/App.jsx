@@ -5,9 +5,10 @@ import './App.css'
 function App() {
   const [games, setGames] = useState([])
   const [gameName, setGameName] = useState('')
+  const [isLoading, setLoading] = useState(false)
 
   async function search() {
-      const res = await fetch(`http://localhost:5678/hltb?gameName=${gameName}&limit=1`)
+      const res = await fetch(`https://backlogpicker.onrender.com/hltb?gameName=${gameName}&limit=1`)
       const data = await res.json()
       setGames(data)
       console.log(data)
@@ -33,17 +34,28 @@ function App() {
         <button
           type="button"
           className="fetch"
-          onClick={async () => {console.log("printed"); await search(); console.log("printed")}}>
+          onClick={
+            async () => {
+              setLoading(true)
+
+              await search()
+
+              setLoading(false)
+            }}>
           Press for Game
         </button>
-        {games.map((game, i) => (
-          <div key={i}>
-            <h2>{game.game_name}</h2>
-            <p>Main Story: {game.main_story}h</p>
-            <p>Main + Extra: {game.main_extra}h</p>
-            <p>Completionist: {game.completionist}h</p>
-          </div>
-        ))}
+        {isLoading ? (
+          <p>Fetching game(s)</p>
+        ) : (
+          games.map((game, i) => (
+            <div key={i}>
+              <h2>{game.game_name}</h2>
+              <p>Main Story: {game.main_story}h</p>
+              <p>Main + Extra: {game.main_extra}h</p>
+              <p>Completionist: {game.completionist}h</p>
+            </div>
+          ))
+        )}
       </section>
       
     </>
