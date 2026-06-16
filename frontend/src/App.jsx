@@ -3,16 +3,34 @@ import heroImg from './assets/hero.png'
 import './App.css'
 
 function App() {
-  const [games, setGames] = useState([])
+  // Used by HLTB API
   const [gameName, setGameName] = useState('')
+  const [game, setGame] = useState({
+    game_name: "",
+    main_story: "",
+    main_extra: "",
+    completionist: ""
+  })
+
+  // For Steam API
+  const [userID, setUserID] = useState('')
+
+  // UI
   const [isLoading, setLoading] = useState(false)
 
   const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:5678';
 
-  async function search() {
+  async function getDataHLTB() {
       const res = await fetch(`${apiURL}/hltb?gameName=${gameName}&limit=1`)
       const data = await res.json()
-      setGames(data)
+      setGame(data[0])
+      console.log(data)
+  }
+
+  async function getGameSteam() {
+      const res = await fetch(`${apiURL}/steam?userID=${userID}`)
+      const data = await res.json()
+      setGame(data[0])
       console.log(data)
   }
 
@@ -28,9 +46,9 @@ function App() {
       <section id="input">
         <input
           type="text"
-          placeholder="Enter game name"
-          value={gameName}
-          onChange={(e) => setGameName(e.target.value)}
+          placeholder="Enter Steam User ID"
+          value={userID}
+          onChange={(e) => setUserID(e.target.value)}
         />
 
         <button
@@ -40,23 +58,22 @@ function App() {
             async () => {
               setLoading(true)
 
-              await search()
+              await getGameSteam()
+              await getDataHLTB()
 
               setLoading(false)
             }}>
           Press for Game
         </button>
         {isLoading ? (
-          <p>Fetching game(s)</p>
+          <p>Fetching game</p>
         ) : (
-          games.map((game, i) => (
-            <div key={i}>
-              <h2>{game.game_name}</h2>
-              <p>Main Story: {game.main_story}h</p>
-              <p>Main + Extra: {game.main_extra}h</p>
-              <p>Completionist: {game.completionist}h</p>
-            </div>
-          ))
+          <div>
+            <h2>{game.game_name}</h2>
+            <p>Main Story: {game.main_story}h</p>
+            <p>Main + Extra: {game.main_extra}h</p>
+            <p>Completionist: {game.completionist}h</p>
+          </div>
         )}
       </section>
       

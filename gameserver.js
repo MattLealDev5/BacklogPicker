@@ -1,4 +1,5 @@
 
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import swaggerJsDoc from 'swagger-jsdoc';
@@ -38,7 +39,7 @@ let hltbService = new HowLongToBeatService();
  * /hltb:
  *   get:
  *     tags: [HLTB]
- *     summary: Check if can get howlongtobeat game info.
+ *     summary: Return howlongtobeat info for a specified game.
  *     description: yeah.
  *     parameters:
  *       - name: gameName
@@ -70,7 +71,47 @@ app.get('/hltb', async function (req, res) {
         const output = await PythonShell.run('hltb.py', options);
         return res.status(200).json(output);
     } catch(error) {
-        return res.status(404).json(error);
+        return res.status(404).json({ message: error.message, stack: error.stack });
+    }
+});
+
+/**
+ * @swagger
+ * /steam:
+ *   get:
+ *     tags: [Steam]
+ *     summary: Returns a game from Steam API.
+ *     description: yeah.
+ *     parameters:
+ *       - name: userID
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: cool
+ *       404:
+ *         description: not cool
+ */
+app.get('/steam', async function (req, res) {
+    try {
+        const steamID = req.query.userID
+        const steamApiKey = process.env.STEAM_API_KEY;
+
+        // Get games from user and sort by playtime, then pick from that
+        const ownedRes = await fetch(`https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${steamApiKey}&steamid=${steamID}&format=json&include_appinfo=1`)
+        const ownedData = await ownedRes.json()
+        console.log("JSON bullllllshit")
+        const games = ownedData.response.games
+
+        games.sort(function(a, b) {
+            return parseFloat(a.playtime_forever) - parseFloat(b.playtime_forever);
+        });
+
+        return res.status(200).json(games[0]);
+    } catch(error) {
+        return res.status(404).json({ message: error.message, stack: error.stack });
     }
 });
 
