@@ -20,8 +20,8 @@ function App() {
 
   const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:5678';
 
-  async function getDataHLTB() {
-      const res = await fetch(`${apiURL}/hltb?gameName=${gameName}&limit=1`)
+  async function getDataHLTB(name) {
+      const res = await fetch(`${apiURL}/hltb?gameName=${name}&limit=1`)
       const data = await res.json()
       setGame(data[0])
       console.log(data)
@@ -30,8 +30,8 @@ function App() {
   async function getGameSteam() {
       const res = await fetch(`${apiURL}/steam?userID=${userID}`)
       const data = await res.json()
-      setGame(data[0])
       console.log(data)
+      return data.name
   }
 
 
@@ -58,8 +58,8 @@ function App() {
             async () => {
               setLoading(true)
 
-              await getGameSteam()
-              await getDataHLTB()
+              const name = await getGameSteam()
+              await getDataHLTB(name)
 
               setLoading(false)
             }}>
