@@ -88,6 +88,16 @@ app.get('/hltb', async function (req, res) {
  *         required: true
  *         schema:
  *           type: string
+ *       - name: length
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: int
+ *       - name: lucky
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: boolean
  *     responses:
  *       200:
  *         description: cool
@@ -102,12 +112,27 @@ app.get('/steam', async function (req, res) {
         // Get games from user and sort by playtime, then pick from that
         const ownedRes = await fetch(`https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${steamApiKey}&steamid=${steamID}&format=json&include_appinfo=1`)
         const ownedData = await ownedRes.json()
-        console.log("JSON bullllllshit")
-        const games = ownedData.response.games
+        var games = ownedData.response.games
 
+        // Filters out thoroughly played games and sorts from least to most played
+        // Source - https://stackoverflow.com/a/2722213
+        games = games.filter(function (g) {
+            return g.playtime_forever <= 30;
+        });
         games.sort(function(a, b) {
             return parseFloat(a.playtime_forever) - parseFloat(b.playtime_forever);
         });
+
+        // Gets info from each game to make a final decision
+        var chosenGame;
+
+        for(var i = 0; i < games.length; i++) {
+            const gameRes = await fetch(`https://store.steampowered.com/api/appdetails?appids=${games[i].appid}`)
+            const gameData = await gameRes.json()
+            const game = gameData[games[i].appid].data
+
+            return res.status(200).json(gameData);
+        }
 
         return res.status(200).json(games[0]);
     } catch(error) {
