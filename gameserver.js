@@ -81,23 +81,21 @@ app.get('/hltb', async function (req, res) {
  *   get:
  *     tags: [Steam]
  *     summary: Returns a game from Steam API.
- *     description: yeah.
+ *     description: Gets your library and picks out a game.
  *     parameters:
  *       - name: userID
  *         in: query
  *         required: true
  *         schema:
  *           type: string
+ *       - name: genre
+ *         in: query
+ *         schema:
+ *           type: string
  *       - name: length
  *         in: query
- *         required: true
  *         schema:
  *           type: int
- *       - name: lucky
- *         in: query
- *         required: true
- *         schema:
- *           type: boolean
  *     responses:
  *       200:
  *         description: cool
@@ -107,6 +105,8 @@ app.get('/hltb', async function (req, res) {
 app.get('/steam', async function (req, res) {
     try {
         const steamID = req.query.userID
+        const genre = req.query.genre
+        const length = req.query.length
         const steamApiKey = process.env.STEAM_API_KEY;
 
         // Get games from user and sort by playtime, then pick from that
@@ -117,24 +117,65 @@ app.get('/steam', async function (req, res) {
         // Filters out thoroughly played games and sorts from least to most played
         // Source - https://stackoverflow.com/a/2722213
         games = games.filter(function (g) {
-            return g.playtime_forever <= 30;
+            return g.playtime_forever <= 0;
         });
         games.sort(function(a, b) {
             return parseFloat(a.playtime_forever) - parseFloat(b.playtime_forever);
         });
 
+
         // Gets info from each game to make a final decision
         var chosenGame;
-
         for(var i = 0; i < games.length; i++) {
             const gameRes = await fetch(`https://store.steampowered.com/api/appdetails?appids=${games[i].appid}`)
             const gameData = await gameRes.json()
             const game = gameData[games[i].appid].data
+            const gameGenres = game.genres
 
-            return res.status(200).json(gameData);
+            console.log(game.name)
+            var genreCheck = false;
+            var lengthCheck = false;
+
+            // Checking genres for match
+            for(var j = 0; j < gameGenres.length; j++) {
+                if (genre == null) { genreCheck = true; }
+                else {
+                    if(gameGenres[j].description === genre) {
+                        genreCheck = true;
+                        break;
+                    }
+                }
+            }
+
+            // Checking length for agreeable completion time
+            if (length == null) { lengthCheck = true; }
+            else {
+                let options = {
+                    mode: 'json',
+                    pythonPath: process.env.NODE_ENV === 'production' ? 'python3' : 'python/venv/bin/python',
+                    pythonOptions: ['-u'],
+                    scriptPath: 'python/',
+                    args: [game.name, 1]
+                };
+                const output = await PythonShell.run('hltb.py', options);
+                const gameLength = output.main_story
+                console.log(gameLength)
+                if(gameLength <= length) {
+                    lengthCheck = true;
+                }
+            }
+
+            console.log(`Genre Match:  ${genreCheck}`)
+            console.log(`Length Check: ${lengthCheck}`)
+            console.log(``)
+
+            if (genreCheck && lengthCheck) {
+                chosenGame = gameData;
+                break;
+            }
         }
 
-        return res.status(200).json(games[0]);
+        return res.status(200).json(chosenGame);
     } catch(error) {
         return res.status(404).json({ message: error.message, stack: error.stack });
     }
