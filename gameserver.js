@@ -120,8 +120,10 @@ app.get('/steam', async function (req, res) {
             return g.playtime_forever <= 0;
         });
         games.sort(function(a, b) {
-            return parseFloat(a.playtime_forever) - parseFloat(b.playtime_forever);
+            return Math.random() - 0.5;
+            // return parseFloat(a.playtime_forever) - parseFloat(b.playtime_forever);
         });
+        
 
 
         // Gets info from each game to make a final decision
@@ -130,19 +132,38 @@ app.get('/steam', async function (req, res) {
             const gameRes = await fetch(`https://store.steampowered.com/api/appdetails?appids=${games[i].appid}`)
             const gameData = await gameRes.json()
             const game = gameData[games[i].appid].data
+            const gameCategories = game.categories
             const gameGenres = game.genres
 
             console.log(game.name)
+            var singleplayerCheck = false;
             var genreCheck = false;
             var lengthCheck = false;
+
+            // Making sure it's a singleplayer game
+            for(var j = 0; j < gameCategories.length; j++) {
+                // if (genre == null) { genreCheck = true; }
+                // else { }
+                
+                const getCategory = gameCategories[j].description
+                if(getCategory === "Single-player") {
+                    singleplayerCheck = true;
+                    break;
+                }
+            }
+
+            if(!singleplayerCheck) {
+                console.log("Not singleplayer\n")
+                continue;
+            }
 
             // Checking genres for match
             for(var j = 0; j < gameGenres.length; j++) {
                 if (genre == null) { genreCheck = true; }
                 else {
-                    if(gameGenres[j].description === genre) {
+                    const getGenre = gameGenres[j].description
+                    if(getGenre === genre) {
                         genreCheck = true;
-                        break;
                     }
                 }
             }
