@@ -155,10 +155,10 @@ app.get('/steam', async function (req, res) {
                     pythonPath: process.env.NODE_ENV === 'production' ? 'python3' : 'python/venv/bin/python',
                     pythonOptions: ['-u'],
                     scriptPath: 'python/',
-                    args: [game.name, 1]
+                    args: [game.name]
                 };
                 const output = await PythonShell.run('hltb.py', options);
-                const gameLength = output.main_story
+                const gameLength = output[0].main_story
                 console.log(gameLength)
                 if(gameLength <= length) {
                     lengthCheck = true;

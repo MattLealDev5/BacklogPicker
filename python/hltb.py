@@ -11,7 +11,7 @@ def fetchGame(gameName, limit):
     else:
         print(json.dumps({"message": "No games found :("}))
 
-gameName = "Nuclear Throne"
+gameName = "Bleed"
 limit = 1
 
 if len(sys.argv) > 1:
@@ -21,5 +21,5 @@ if len(sys.argv) > 2:
         parsedInt = int(sys.argv[2])
         limit = parsedInt
     except:
-        print("not an integer")
+        print(json.dumps({"error": "limit must be an integer"}))
 fetchGame(gameName, limit)
