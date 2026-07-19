@@ -6,10 +6,10 @@ function App() {
   // Used by HLTB API
   const [gameName, setGameName] = useState('')
   const [game, setGame] = useState({
-    game_name: "",
-    main_story: "",
-    main_extra: "",
-    completionist: ""
+      appid: 0,
+      name: "",
+      genres: [],
+      header_image: "",
   })
 
   // For Steam API
@@ -31,9 +31,8 @@ function App() {
       const res = await fetch(`${apiURL}/steam?userID=${userID}`)
       const data = await res.json()
       console.log(data)
-      return data.name
+      return data
   }
-
 
   return (
     <>
@@ -58,8 +57,8 @@ function App() {
             async () => {
               setLoading(true)
 
-              const name = await getGameSteam()
-              await getDataHLTB(name)
+              const game = await getGameSteam()
+              setGame(game)
 
               setLoading(false)
             }}>
@@ -69,10 +68,19 @@ function App() {
           <p>Fetching game</p>
         ) : (
           <div>
-            <h2>{game.game_name}</h2>
-            <p>Main Story: {game.main_story}h</p>
+            <a href={`https://store.steampowered.com/app/${game.appid}`} target="_blank" rel="noreferrer">
+              <img 
+                src={game.header_image}
+                alt="new"
+              />
+            </a>
+            <h2>{game.name}</h2>
+            {game.genres.map(genre => (
+              <li> {genre.description} </li>
+            ))}
+            {/* <p>Main Story: {game.main_story}h</p>
             <p>Main + Extra: {game.main_extra}h</p>
-            <p>Completionist: {game.completionist}h</p>
+            <p>Completionist: {game.completionist}h</p> */}
           </div>
         )}
       </section>
