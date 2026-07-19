@@ -191,12 +191,32 @@ app.get('/steam', async function (req, res) {
             console.log(``)
 
             if (genreCheck && lengthCheck) {
-                chosenGame = gameData;
+                chosenGame = game;
                 break;
             }
         }
 
-        return res.status(200).json(chosenGame);
+        const pickedGame = {
+            appid: chosenGame.steam_appid,
+            name: chosenGame.name,
+            genres: chosenGame.genres,
+            header_image: chosenGame.header_image,
+            // main_story = entry.main_story,
+            // main_extra = entry.main_extra,
+            // completionist = entry.completionist,
+        };
+
+        // Source - https://stackoverflow.com/a/12992436
+        // var $items = $('#firstName, #lastName, #phoneNumber,#address ')
+        // var obj = {}
+        // $items.each(function() {
+        //     obj[this.id] = $(this).val();
+        // })
+
+        // var gameJSON = JSON.stringify(pickedGame);
+
+
+        return res.status(200).json(pickedGame);
     } catch(error) {
         return res.status(404).json({ message: error.message, stack: error.stack });
     }
