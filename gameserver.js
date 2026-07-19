@@ -206,16 +206,6 @@ app.get('/steam', async function (req, res) {
             // completionist = entry.completionist,
         };
 
-        // Source - https://stackoverflow.com/a/12992436
-        // var $items = $('#firstName, #lastName, #phoneNumber,#address ')
-        // var obj = {}
-        // $items.each(function() {
-        //     obj[this.id] = $(this).val();
-        // })
-
-        // var gameJSON = JSON.stringify(pickedGame);
-
-
         return res.status(200).json(pickedGame);
     } catch(error) {
         return res.status(404).json({ message: error.message, stack: error.stack });
