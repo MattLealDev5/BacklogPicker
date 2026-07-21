@@ -14,9 +14,12 @@ function App() {
 
   // For Steam API
   const [userID, setUserID] = useState('')
+  const [genre, setGenre] = useState('')
+  const [length, setLength] = useState('')
 
   // UI
   const [isLoading, setLoading] = useState(false)
+  const [hasContent, setContent] = useState(false)
 
   const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:5678';
 
@@ -28,7 +31,12 @@ function App() {
   }
 
   async function getGameSteam() {
-      const res = await fetch(`${apiURL}/steam?userID=${userID}`)
+      var url = `${apiURL}/steam?userID=${userID}`
+      if (genre != "") { url += `&genre=${genre}` }
+      if (length != "") { url += `&length=${length}` }
+      console.log(url)
+
+      const res = await fetch(url)
       const data = await res.json()
       console.log(data)
       return data
@@ -49,6 +57,35 @@ function App() {
           value={userID}
           onChange={(e) => setUserID(e.target.value)}
         />
+        <br/>
+
+        <p>Pick a Genre</p>
+        <select value={genre} onChange={(e) => setGenre(e.target.value)}>
+          <option value="">Don't Care</option>
+          <option value="Action">Action</option>
+          <option value="Strategy">Strategy</option>
+          <option value="RPG">RPG</option>
+          <option value="Casual">Casual</option>
+          <option value="Racing">Racing</option>
+          <option value="Sports">Sports</option>
+          <option value="Indie">Indie</option>
+          <option value="Adventure">Adventure</option>
+          <option value="Simulation">Simulation</option>
+          <option value="Massively Multiplayer">Massively Multiplayer</option>
+        </select>
+        <br/>
+
+        <p>Select maximum length</p>
+        <select value={length} onChange={(e) => setLength(e.target.value)}>
+          <option value="">Don't Care</option>
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+        <br/>
+
 
         <button
           type="button"
@@ -56,33 +93,35 @@ function App() {
           onClick={
             async () => {
               setLoading(true)
+              setContent(false)
 
               const game = await getGameSteam()
               setGame(game)
 
               setLoading(false)
+              setContent(true)
             }}>
           Press for Game
         </button>
         {isLoading ? (
           <p>Fetching game</p>
-        ) : (
+        ) : hasContent ? (
           <div>
             <a href={`https://store.steampowered.com/app/${game.appid}`} target="_blank" rel="noreferrer">
-              <img 
+              <img
                 src={game.header_image}
                 alt="new"
               />
             </a>
             <h2>{game.name}</h2>
             {game.genres.map(genre => (
-              <li> {genre.description} </li>
+              <li key={genre.id}> {genre.description} </li>
             ))}
             {/* <p>Main Story: {game.main_story}h</p>
             <p>Main + Extra: {game.main_extra}h</p>
             <p>Completionist: {game.completionist}h</p> */}
           </div>
-        )}
+        ) : null}
       </section>
       
     </>
