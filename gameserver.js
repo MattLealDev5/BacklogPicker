@@ -117,12 +117,12 @@ app.get('/steam', async function (req, res) {
         // Filters out thoroughly played games and sorts from least to most played
         // Source - https://stackoverflow.com/a/2722213
         games = games.filter(function (g) {
-            return g.playtime_forever <= 0;
+            return g.playtime_forever <= 0 && !g.toLowerCase().name.includes("playtest");
         });
-        games.sort(function(a, b) {
-            return Math.random() - 0.5;
+        // games.sort(function(a, b) {
+        //     return Math.random() - 0.5;
             // return parseFloat(a.playtime_forever) - parseFloat(b.playtime_forever);
-        });
+        // });
         
 
 
@@ -151,7 +151,6 @@ app.get('/steam', async function (req, res) {
                     break;
                 }
             }
-
             if(!singleplayerCheck) {
                 console.log("Not singleplayer\n")
                 continue;
@@ -171,18 +170,22 @@ app.get('/steam', async function (req, res) {
             // Checking length for agreeable completion time
             if (length == null) { lengthCheck = true; }
             else {
-                let options = {
-                    mode: 'json',
-                    pythonPath: process.env.NODE_ENV === 'production' ? 'python3' : 'python/venv/bin/python',
-                    pythonOptions: ['-u'],
-                    scriptPath: 'python/',
-                    args: [game.name]
-                };
-                const output = await PythonShell.run('hltb.py', options);
-                const gameLength = output[0].main_story
-                console.log(gameLength)
-                if(gameLength <= length) {
-                    lengthCheck = true;
+                try {
+                    let options = {
+                        mode: 'json',
+                        pythonPath: process.env.NODE_ENV === 'production' ? 'python3' : 'python/venv/bin/python',
+                        pythonOptions: ['-u'],
+                        scriptPath: 'python/',
+                        args: [game.name]
+                    };
+                    const output = await PythonShell.run('hltb.py', options);
+                    const gameLength = output[0].main_story
+                    console.log(gameLength)
+                    if(gameLength <= length) {
+                        lengthCheck = true;
+                    }
+                } catch(error) {
+                    console.log("No HLTB data\n")
                 }
             }
 
