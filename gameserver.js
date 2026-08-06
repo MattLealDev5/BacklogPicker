@@ -117,7 +117,7 @@ app.get('/steam', async function (req, res) {
         // Filters out thoroughly played games and sorts from least to most played
         // Source - https://stackoverflow.com/a/2722213
         games = games.filter(function (g) {
-            return g.playtime_forever <= 0 && !g.toLowerCase().name.includes("playtest");
+            return g.playtime_forever <= 0 && !g.name.toLowerCase().includes("playtest");
         });
         // games.sort(function(a, b) {
         //     return Math.random() - 0.5;

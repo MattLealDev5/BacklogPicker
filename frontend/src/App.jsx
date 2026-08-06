@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import heroImg from './assets/hero.png'
 import './App.css'
+import GameView from './components/GameView'
 
 function App() {
-  // Used by HLTB API
-  const [gameName, setGameName] = useState('')
   const [game, setGame] = useState({
       appid: 0,
       name: "",
@@ -22,13 +21,6 @@ function App() {
   const [hasContent, setContent] = useState(false)
 
   const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:5678';
-
-  async function getDataHLTB(name) {
-      const res = await fetch(`${apiURL}/hltb?gameName=${name}&limit=1`)
-      const data = await res.json()
-      setGame(data[0])
-      console.log(data)
-  }
 
   async function getGameSteam() {
       var url = `${apiURL}/steam?userID=${userID}`
@@ -97,6 +89,7 @@ function App() {
 
               const game = await getGameSteam()
               setGame(game)
+              console.log(game)
 
               setLoading(false)
               setContent(true)
@@ -106,21 +99,7 @@ function App() {
         {isLoading ? (
           <p>Fetching game</p>
         ) : hasContent ? (
-          <div>
-            <a href={`https://store.steampowered.com/app/${game.appid}`} target="_blank" rel="noreferrer">
-              <img
-                src={game.header_image}
-                alt="new"
-              />
-            </a>
-            <h2>{game.name}</h2>
-            {game.genres.map(genre => (
-              <li key={genre.id}> {genre.description} </li>
-            ))}
-            {/* <p>Main Story: {game.main_story}h</p>
-            <p>Main + Extra: {game.main_extra}h</p>
-            <p>Completionist: {game.completionist}h</p> */}
-          </div>
+          <GameView game={game}/>
         ) : null}
       </section>
       
