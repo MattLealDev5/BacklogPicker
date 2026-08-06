@@ -119,10 +119,10 @@ app.get('/steam', async function (req, res) {
         games = games.filter(function (g) {
             return g.playtime_forever <= 0 && !g.name.toLowerCase().includes("playtest");
         });
-        // games.sort(function(a, b) {
-        //     return Math.random() - 0.5;
+        games.sort(function(a, b) {
+            return Math.random() - 0.5;
             // return parseFloat(a.playtime_forever) - parseFloat(b.playtime_forever);
-        // });
+        });
         
 
 

@@ -19,6 +19,7 @@ function App() {
   // UI
   const [isLoading, setLoading] = useState(false)
   const [hasContent, setContent] = useState(false)
+  const [getError, setError] = useState(false)
 
   const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:5678';
 
@@ -86,18 +87,26 @@ function App() {
             async () => {
               setLoading(true)
               setContent(false)
+              setError(false)
 
               const game = await getGameSteam()
-              setGame(game)
-              console.log(game)
+              if (game && game.name) {
+                  setGame(game)
+                  setContent(true)
+                  console.log(game)
+              } else {
+                  setError(true)
+                  console.error("Failed to fetch game:", data?.message)
+              }
 
               setLoading(false)
-              setContent(true)
             }}>
           Press for Game
         </button>
         {isLoading ? (
           <p>Fetching game</p>
+        ) : getError ? (
+          <p>Error fetching content, sorry</p>
         ) : hasContent ? (
           <GameView game={game}/>
         ) : null}
